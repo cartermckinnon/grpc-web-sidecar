@@ -1,14 +1,14 @@
 admin:
   access_log_path: /tmp/admin_access.log
   address:
-    socket_address: { address: 127.0.0.1, port_value: ENVOY_ADMIN_PORT }
+    socket_address:
+      { address: ENVOY_ADMIN_ADDRESS, port_value: ENVOY_ADMIN_PORT }
 
 static_resources:
   listeners:
     - name: listener_0
       address:
-        socket_address:
-          { address: GRPC_SERVICE_ADDRESS, port_value: GRPC_SERVICE_PORT }
+        socket_address: { address: GRPC_WEB_ADDRESS, port_value: GRPC_WEB_PORT }
       filter_chains:
         - filters:
             - name: envoy.filters.network.http_connection_manager
@@ -53,5 +53,5 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: GRPC_WEB_ADDRESS
-                      port_value: GRPC_WEB_PORT
+                      address: GRPC_SERVICE_ADDRESS
+                      port_value: GRPC_SERVICE_PORT

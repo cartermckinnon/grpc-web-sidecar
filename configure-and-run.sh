@@ -1,23 +1,33 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-FILE=envoy.yaml
+set -e
 
-ENVOY_ADMIN_PORT=9901
-sed -i 's/ENVOY_ADMIN_PORT/'$ENVOY_ADMIN_PORT'/g' $FILE
+if [ "$#" -ne 1 ]
+then
+    echo "usage: $0 ENVOY_CONFIG_FILE"
+    exit 1
+fi
 
-ENVOY_ADMIN_ADDRESS=127.0.0.1
-sed -i 's/ENVOY_ADMIN_ADDRESS/'$ENVOY_ADMIN_ADDRESS'/g' $FILE
+FILE="$1"
 
-GRPC_SERVICE_PORT=8080
-sed -i 's/GRPC_SERVICE_PORT/'$GRPC_SERVICE_PORT'/g' $FILE
+declare -A VARS
+VARS=(
+    ["ENVOY_ADMIN_PORT"]="9901"
+    ["ENVOY_ADMIN_ADDRESS"]="127.0.0.1"
+    ["GRPC_SERVICE_PORT"]="8080"
+    ["GRPC_SERVICE_ADDRESS"]="127.0.0.1"
+    ["GRPC_WEB_PORT"]="8080"
+    ["GRPC_WEB_ADDRESS"]="0.0.0.0"
+)
 
-GRPC_SERVICE_ADDRESS=127.0.0.1
-sed -i 's/GRPC_SERVICE_ADDRESS/'$GRPC_SERVICE_ADDRESS'/g' $FILE
+for VAR in "${!VARS[@]}"
+do
+    VALUE="${!VAR}"
+    if [ "$VALUE" = "" ]
+    then
+        VALUE="${VARS[$VAR]}"
+    fi
+    sed -i 's/'"$VAR"'/'"$VALUE"'/g' "$FILE"
+done
 
-GRPC_WEB_PORT=8082
-sed -i 's/GRPC_WEB_PORT/'$GRPC_WEB_PORT'/g' $FILE
-
-GRPC_WEB_ADDRESS=0.0.0.0
-sed -i 's/GRPC_WEB_ADDRESS/'$GRPC_WEB_ADDRESS'/g' $FILE
-
-exec envoy -c $FILE
+exec envoy -c "$FILE"
