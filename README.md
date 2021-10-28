@@ -4,6 +4,10 @@ Envoy proxy configured to provide gRPC-web support for any gRPC service.
 
 This container is intended to be used primarily within a Kubernetes pod alongside a gRPC service, hence the default gRPC service address of `127.0.0.1`; but it can be configured for various other setups.
 
+### Image
+
+`mckdev/grpc-web-sidecar`
+
 ### Configuration
 
 | Environment variable | Default value |
